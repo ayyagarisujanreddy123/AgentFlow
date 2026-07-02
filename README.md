@@ -6,13 +6,14 @@
 
 <br/>
 
-**Offload the grunt work to disposable subagents — native Claude Code Skills, no API key.**
+**Offload the grunt work to disposable subagents — native Claude Code Skills, no API key. Also runs in Codex and other AI coding tools.**
 
 <br/>
 
 [![npm](https://img.shields.io/npm/v/agentflow-skills?label=agentflow-skills&color=cb3837&logo=npm)](https://www.npmjs.com/package/agentflow-skills)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Skills](https://img.shields.io/badge/Claude%20Code-Skills-blue)](#install)
+[![Codex](https://img.shields.io/badge/Codex-supported-blue)](#codex-and-other-ai-coding-tools)
 [![Setup](https://img.shields.io/badge/setup-zero%20config-success)](#install)
 [![No API key](https://img.shields.io/badge/API%20key-not%20required-brightgreen)](#install)
 
@@ -23,7 +24,7 @@
 npx agentflow-skills install
 ```
 
-<sub><a href="#install">Install</a> • <a href="#how-it-works">How It Works</a> • <a href="#the-skills">Skills</a> • <a href="#when-it-pays-off-the-benchmark">Benchmark</a> • <a href="#whats-different-from-the-mcp-version">vs MCP</a> • <a href="#legacy-the-mcp-server">Legacy MCP</a> • <a href="#license">License</a></sub>
+<sub><a href="#install">Install</a> • <a href="#codex-and-other-ai-coding-tools">Codex & Others</a> • <a href="#how-it-works">How It Works</a> • <a href="#the-skills">Skills</a> • <a href="#when-it-pays-off-the-benchmark">Benchmark</a> • <a href="#whats-different-from-the-mcp-version">vs MCP</a> • <a href="#legacy-the-mcp-server">Legacy MCP</a> • <a href="#license">License</a></sub>
 
 </div>
 
@@ -37,6 +38,8 @@ stays clean and goes further before it fills.
 
 It runs entirely inside your existing Claude Code session. **No Anthropic API key.
 No separate billing. No MCP server to keep running.** Install is copying a folder.
+The same skills also run in **Codex and other AI coding tools** — see
+[Codex and other AI coding tools](#codex-and-other-ai-coding-tools).
 
 > **Pivoted from an MCP server.** AgentFlow began as the `agentflow-mcp` npm
 > package, which routed tool calls to the Anthropic API. That required every user
@@ -108,8 +111,9 @@ That's the whole install. No key, no `init`, no restart-and-pray. Skills are
 discovered by their `description` and fire when Claude Code judges them relevant
 (or when you name one explicitly).
 
-> **Requirement:** Claude Code. The `npx` installer also needs Node.js >= 18; the
-> manual copy needs nothing but `git`. No API key, no credits either way.
+> **Requirement:** Claude Code (or Codex / another tool — see the next section).
+> The `npx` installer also needs Node.js >= 18; the manual copy needs nothing but
+> `git`. No API key, no credits either way.
 
 ### Codex and other AI coding tools
 
@@ -201,6 +205,10 @@ Two pieces:
   subagents. The Haiku worker handles extraction (read, search, summarize,
   transform, ask); the Sonnet worker handles correctness-sensitive work (gen,
   review). Methodology lives in the skill, so two workers serve all seven skills.
+
+Outside Claude Code the same flow holds — each `SKILL.md`'s "Other runtimes"
+section swaps the dispatch (`spawn_agent` on Codex) and a one-line worker
+preamble stands in for the agent files.
 
 ---
 
