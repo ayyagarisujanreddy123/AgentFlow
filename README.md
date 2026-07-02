@@ -111,6 +111,31 @@ discovered by their `description` and fire when Claude Code judges them relevant
 > **Requirement:** Claude Code. The `npx` installer also needs Node.js >= 18; the
 > manual copy needs nothing but `git`. No API key, no credits either way.
 
+### Codex and other AI coding tools
+
+The skills also run outside Claude Code. Every `SKILL.md` carries an
+**"Other runtimes"** section: the methodology prompt is identical, only the
+dispatch changes.
+
+```bash
+npx agentflow-skills install --codex              # Codex CLI: ~/.codex/skills/
+npx agentflow-skills install --dest ~/.agents/skills   # any other runtime's skills dir
+```
+
+For Codex, enable subagents in `~/.codex/config.toml`:
+
+```toml
+[features]
+multi_agent = true
+```
+
+**What carries over:** the methodology prompts and the context firewall (Codex
+`spawn_agent` runs the worker in an isolated context, same as a Claude Code
+subagent). **What doesn't:** the model pins. Other runtimes have no Haiku/Sonnet,
+so workers run the runtime's default model — the cheap-Haiku economics are lost,
+and the two `agents/*.md` worker definitions are Claude-specific and not
+installed. Skills tell the dispatcher to prepend a short worker preamble instead.
+
 ---
 
 ## The skills

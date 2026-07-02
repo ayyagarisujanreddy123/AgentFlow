@@ -106,6 +106,12 @@ for (const skill of EXPECTED_SKILLS) {
 
   // Methodology prompt should be embedded (a fenced block in the body).
   check(`skill ${skill} embeds a methodology/prompt block`, body.includes("```"));
+
+  // Cross-runtime dispatch: every skill must carry the Codex/other-runtimes
+  // section so the same file works outside Claude Code.
+  check(`skill ${skill} has an Other-runtimes section`, body.includes("## Other runtimes"));
+  check(`skill ${skill} documents Codex spawn_agent dispatch`, body.includes("spawn_agent") && body.includes("multi_agent = true"));
+  check(`skill ${skill} carries the portable worker preamble`, body.includes("You are a disposable worker in an isolated context"));
 }
 
 console.log(`\n${pass} passed, ${fail} failed\n`);

@@ -56,6 +56,29 @@ try {
   run("uninstall", "--project");
   check("uninstall removed skills", !fs.existsSync(path.join(skillsDst, "agentflow-review")));
   check("uninstall removed agents", !fs.existsSync(path.join(agentsDst, "agentflow-haiku-worker.md")));
+
+  // --codex installs skills only, into .codex/skills
+  const codexSkills = path.join(tmp, ".codex", "skills");
+  const outC = run("install", "--project", "--codex");
+  check("--codex reports 7 skills, no agents", /7 skills\./.test(outC), outC.trim().split("\n").pop());
+  check("--codex copied a skill", fs.existsSync(path.join(codexSkills, "agentflow-review", "SKILL.md")));
+  check("--codex skipped agents", !fs.existsSync(path.join(tmp, ".codex", "agents")));
+  check("--codex prints multi_agent hint", /multi_agent = true/.test(outC));
+  run("uninstall", "--project", "--codex");
+  check("--codex uninstall removed skills", !fs.existsSync(path.join(codexSkills, "agentflow-review")));
+
+  // --dest installs skills into an arbitrary dir
+  const destDir = path.join(tmp, "agents-skills");
+  run("install", "--dest", destDir);
+  check("--dest copied a skill", fs.existsSync(path.join(destDir, "agentflow-summarize", "SKILL.md")));
+  check("--dest skipped agents", !fs.existsSync(path.join(destDir, "agentflow-haiku-worker.md")));
+  run("uninstall", "--dest", destDir);
+  check("--dest uninstall removed skills", !fs.existsSync(path.join(destDir, "agentflow-summarize")));
+
+  // --codex + --dest is an error
+  let conflictFailed = false;
+  try { run("install", "--codex", "--dest", destDir); } catch { conflictFailed = true; }
+  check("--codex with --dest rejected", conflictFailed);
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
