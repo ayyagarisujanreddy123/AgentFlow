@@ -29,6 +29,8 @@ agents/
 
 **Model routing is policy.** `gen` and `review` dispatch the **Sonnet** worker (correctness matters: real bugs, imports that resolve). Everything else dispatches the **Haiku** worker (extraction, condense, reformat). When adding a skill, decide which worker it uses and wire it accordingly — don't route reasoning-heavy work to the Haiku worker. These methodology prompts are carried verbatim from the legacy MCP `SYSTEM` constants; keep them in sync if you change one and the legacy tool still ships.
 
+**Cross-runtime dispatch.** Every `SKILL.md` ends with an "Other runtimes" section so the same file works outside Claude Code: Codex dispatches via `spawn_agent`/`wait_agent`/`close_agent` (needs `multi_agent = true` in `~/.codex/config.toml`); other tools use their subagent mechanism or run the prompt inline. Model pins don't exist there — the section gives model *guidance* (cheapest for Haiku-tier skills, strongest for gen/review) and a one-line worker preamble that stands in for the Claude-only `agents/*.md` persona. Keep the seven sections uniform; the installer's `--codex` / `--dest` flags copy skills only, never agents. Root `AGENTS.md` is the Codex-facing pointer to this file.
+
 **Honest scope.** `read` and `search` overlap with native `Read` / `Explore` (which already isolates search in a subagent). Their only edge is the Haiku pin and a structured output format — they're the weakest of the seven. `review` and `gen` are the strongest; their value was always the methodology, not the transport.
 
 **The context firewall has a crossover (~5 KB).** A dispatched skill's main-context cost is roughly flat — `SKILL.md` methodology load + dispatch prompt + returned result, independent of input size. Inline reading grows with the file. So the firewall only saves main-context tokens **above ~5 KB**; below that the dispatch overhead is a net loss and native tools are cheaper. Total token spend is *always* higher with a worker (it's a second full context). Don't route small inputs through a skill. The benchmark behind this — same review task, two file sizes, both metrics — lives in [`COMPARISON.md`](./COMPARISON.md). Lighter-methodology skills (`read`, `search`, `summarize`) carry less fixed overhead, so their crossover sits below 5 KB.
@@ -36,7 +38,7 @@ agents/
 ### Skills tests
 
 ```bash
-node test/skills.mjs    # 62 checks, no network — frontmatter, worker wiring, model pins
+node test/skills.mjs    # 83 checks, no network — frontmatter, worker wiring, model pins, cross-runtime sections
 ```
 
 No build step — skills and agents are plain markdown. The test validates structure, not behavior (subagent dispatch can't be unit-tested without a live session).
